@@ -1,0 +1,6 @@
+{
+  "name": "Argentinosaurus — Titan of the Patagonian River Plains",
+  "description": "An interactive museum-grade paleontological portfolio and digital monograph exploring Argentinosaurus huinculensis and the Early Cretaceous Huincul Formation ecosystem.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

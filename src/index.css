@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+:root {
+  --sunlit: #F7C95F;
+  --ochre: #D9963A;
+  --olive: #8C9B34;
+  --fern: #4A8C3A;
+  --forest: #1F5B2F;
+  --deep: #0E3320;
+  --floor: #07190E;
+  --umber: #150F06;
+  --silt: #D8C089;
+  --bone: #FFF8E6;
+  --rim: #FFE08F;
+
+  --font-display: "Marcellus", "Cinzel", "Optima", Georgia, serif;
+  --font-body: "Jost", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+    background-color: var(--floor);
+    color: var(--bone);
+    scroll-behavior: smooth;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-display);
+  }
+
+  body {
+    background-color: var(--floor);
+    color: var(--bone);
+    overflow-x: hidden;
+    font-weight: 300;
+    line-height: 1.7;
+  }
+}
+
+.section-scroll-reveal {
+  will-change: transform, opacity;
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Custom utility classes for the River-Plain & Forest Ecosystem */
+.hero-ecosystem-gradient {
+  background:
+    radial-gradient(circle at 0% 0%, rgba(7, 25, 14, 0.55) 0%, transparent 38%),
+    radial-gradient(circle at 100% 0%, rgba(7, 25, 14, 0.55) 0%, transparent 38%),
+    radial-gradient(circle at 0% 100%, rgba(7, 25, 14, 0.78) 0%, transparent 45%),
+    radial-gradient(circle at 100% 100%, rgba(7, 25, 14, 0.78) 0%, transparent 45%),
+    radial-gradient(
+      ellipse 135% 112% at 50% -12%,
+      var(--sunlit) 0%,
+      var(--ochre) 14%,
+      var(--olive) 30%,
+      var(--fern) 48%,
+      var(--forest) 70%,
+      var(--deep) 88%,
+      var(--floor) 100%
+    );
+}
+
+.wordmark-glow {
+  text-shadow: 0 2px 28px rgba(255, 224, 143, 0.28), 0 4px 16px rgba(14, 51, 32, 0.35);
+}
+
+.nav-text-shadow {
+  text-shadow: 0 1px 10px rgba(30, 20, 5, 0.45);
+}
+
+.section-number-outline {
+  font-family: var(--font-display);
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(255, 248, 230, 0.4);
+  user-select: none;
+}
+
+.creature-hero-grade {
+  filter: sepia(0.18) saturate(1.18) contrast(1.08) brightness(0.97);
+}
+
+/* Sunbeam sway animations */
+@keyframes sunbeamSwaySlow {
+  0%, 100% {
+    transform: rotate(-4deg) translateX(-1.5%) scaleY(1);
+    opacity: 0.22;
+  }
+  50% {
+    transform: rotate(3deg) translateX(2%) scaleY(1.05);
+    opacity: 0.28;
+  }
+}
+
+@keyframes sunbeamSwayAlt {
+  0%, 100% {
+    transform: rotate(3.5deg) translateX(1.5%) scaleY(1.02);
+    opacity: 0.16;
+  }
+  50% {
+    transform: rotate(-2.5deg) translateX(-2%) scaleY(0.97);
+    opacity: 0.24;
+  }
+}
+
+@keyframes creatureIdleSway {
+  0%, 100% {
+    transform: translateY(-4px) rotate(-0.35deg);
+  }
+  50% {
+    transform: translateY(5px) rotate(0.4deg);
+  }
+}
+
+@keyframes riverGlint {
+  0%, 100% {
+    stroke-dashoffset: 0;
+    opacity: 0.42;
+  }
+  50% {
+    stroke-dashoffset: -120;
+    opacity: 0.68;
+  }
+}
+
+@keyframes dustPuffDrift {
+  0% {
+    transform: translate(0, 0) scale(0.85);
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.38;
+  }
+  100% {
+    transform: translate(-28px, -22px) scale(1.45);
+    opacity: 0;
+  }
+}
+
+.animate-sunbeam-1 {
+  animation: sunbeamSwaySlow 16s ease-in-out infinite;
+}
+.animate-sunbeam-2 {
+  animation: sunbeamSwayAlt 21s ease-in-out infinite;
+}
+.animate-creature-idle {
+  animation: creatureIdleSway 9s ease-in-out infinite;
+}
+.animate-river-glint {
+  stroke-dasharray: 60 180;
+  animation: riverGlint 14s ease-in-out infinite;
+}
+.animate-dust-puff {
+  animation: dustPuffDrift 5.5s ease-out infinite;
+}
+
+/* Perspective utilities for Myth vs Reality 3D flip cards */
+.perspective-1000 {
+  perspective: 1000px;
+}
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+/* Reduced motion compliance */
+@media (prefers-reduced-motion: reduce) {
+  .animate-sunbeam-1,
+  .animate-sunbeam-2,
+  .animate-creature-idle,
+  .animate-river-glint,
+  .animate-dust-puff {
+    animation: none !important;
+  }
+}
+
+/* Focus ring accessibility */
+*:focus-visible {
+  outline: 2px solid var(--sunlit);
+  outline-offset: 3px;
+}
