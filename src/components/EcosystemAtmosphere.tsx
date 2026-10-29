@@ -1,4 +1,8 @@
 import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface EcosystemAtmosphereProps {
   mouseOffset: { x: number; y: number };
@@ -84,12 +88,84 @@ export const HeroBackAtmosphere: React.FC<EcosystemAtmosphereProps> = ({
   mouseOffset,
   reducedMotion,
 }) => {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const braidedRiverSvgRef = useRef<SVGSVGElement | null>(null);
+  const primaryChannelsRef = useRef<SVGGElement | null>(null);
+  const glintChannelsRef = useRef<SVGGElement | null>(null);
+
   const sunbeamShiftX = reducedMotion ? 0 : mouseOffset.x * 40;
   const sunbeamShiftY = reducedMotion ? 0 : mouseOffset.y * 20;
   const treelineShiftX = reducedMotion ? 0 : mouseOffset.x * 16;
 
+  // Horizontal scroll-triggered parallax for the braided river SVG & silt-gold channels
+  useEffect(() => {
+    if (reducedMotion || !containerRef.current || !braidedRiverSvgRef.current) return;
+
+    const ctx = gsap.context(() => {
+      const triggerEl = document.getElementById('hero') || containerRef.current;
+
+      // Move the braided river SVG horizontally as the user scrolls down the river plain
+      gsap.fromTo(
+        braidedRiverSvgRef.current,
+        { x: 0 },
+        {
+          x: -115,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: triggerEl,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 0.5,
+          },
+        }
+      );
+
+      // Silt-gold primary channels glide slightly faster than the river bed
+      if (primaryChannelsRef.current) {
+        gsap.fromTo(
+          primaryChannelsRef.current,
+          { x: 0 },
+          {
+            x: -55,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: triggerEl,
+              start: 'top top',
+              end: 'bottom top',
+              scrub: 0.45,
+            },
+          }
+        );
+      }
+
+      // Luminous surface current glints move fastest to simulate active water flow
+      if (glintChannelsRef.current) {
+        gsap.fromTo(
+          glintChannelsRef.current,
+          { x: 0 },
+          {
+            x: -95,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: triggerEl,
+              start: 'top top',
+              end: 'bottom top',
+              scrub: 0.35,
+            },
+          }
+        );
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, [reducedMotion]);
+
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden select-none" aria-hidden="true">
+    <div
+      ref={containerRef}
+      className="pointer-events-none absolute inset-0 overflow-hidden select-none"
+      aria-hidden="true"
+    >
       {/* 1. Heat-hazed sunbeams: 5 broad, soft, warm golden shafts from the top */}
       <div
         className="absolute inset-0 transition-transform duration-300 ease-out"
@@ -191,15 +267,21 @@ export const HeroBackAtmosphere: React.FC<EcosystemAtmosphereProps> = ({
         </svg>
       </div>
 
-      {/* 5. Braided river: faint, luminous, silt-gold braided channels across the lower 30% of the frame, running behind the creature's legs */}
-      <div className="absolute inset-x-0 bottom-0 h-[32%] opacity-75">
-        <svg viewBox="0 0 1600 300" preserveAspectRatio="none" className="h-full w-full">
+      {/* 5. Braided river: faint, luminous, silt-gold braided channels across the lower 30% of the frame, running behind the creature's legs with horizontal scroll parallax */}
+      <div className="absolute inset-x-0 bottom-0 h-[32%] overflow-hidden opacity-75">
+        <svg
+          ref={braidedRiverSvgRef}
+          data-testid="braided-river-svg"
+          viewBox="0 0 1840 300"
+          preserveAspectRatio="none"
+          className="h-full w-[118%] max-w-none will-change-transform"
+        >
           <defs>
             <linearGradient id="braidedSiltGrad" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#D8C089" stopOpacity="0.12" />
-              <stop offset="25%" stopColor="#F7C95F" stopOpacity="0.45" />
-              <stop offset="50%" stopColor="#FFE08F" stopOpacity="0.62" />
-              <stop offset="75%" stopColor="#D8C089" stopOpacity="0.45" />
+              <stop offset="22%" stopColor="#F7C95F" stopOpacity="0.45" />
+              <stop offset="50%" stopColor="#FFE08F" stopOpacity="0.64" />
+              <stop offset="78%" stopColor="#D8C089" stopOpacity="0.45" />
               <stop offset="100%" stopColor="#8C9B34" stopOpacity="0.12" />
             </linearGradient>
             <linearGradient id="riverPlainBed" x1="0" y1="0" x2="0" y2="1">
@@ -209,50 +291,56 @@ export const HeroBackAtmosphere: React.FC<EcosystemAtmosphereProps> = ({
             </linearGradient>
           </defs>
 
-          <rect x="0" y="0" width="1600" height="300" fill="url(#riverPlainBed)" />
+          <rect x="0" y="0" width="1840" height="300" fill="url(#riverPlainBed)" />
 
-          {/* Anastomosing braided channels that split and rejoin */}
-          <path
-            d="M-60,78 C220,62 410,115 690,94 C960,72 1190,128 1660,88"
-            fill="none"
-            stroke="url(#braidedSiltGrad)"
-            strokeWidth="3.5"
-          />
-          <path
-            d="M-40,112 C260,148 490,78 780,118 C1040,154 1310,92 1650,136"
-            fill="none"
-            stroke="url(#braidedSiltGrad)"
-            strokeWidth="6"
-            opacity="0.7"
-          />
-          <path
-            d="M80,92 C310,126 530,132 760,96 C990,62 1210,142 1520,110"
-            fill="none"
-            stroke="#FFE08F"
-            strokeWidth="2"
-            className="animate-river-glint"
-          />
-          <path
-            d="M-50,168 C290,132 620,206 940,164 C1220,126 1410,192 1660,174"
-            fill="none"
-            stroke="url(#braidedSiltGrad)"
-            strokeWidth="8.5"
-            opacity="0.55"
-          />
-          <path
-            d="M190,152 C460,192 710,144 1020,178 C1260,204 1450,156 1640,188"
-            fill="none"
-            stroke="#FFE08F"
-            strokeWidth="2.4"
-            className="animate-river-glint"
-          />
-          <path
-            d="M-30,226 C380,254 790,198 1180,236 C1380,254 1510,224 1650,242"
-            fill="none"
-            stroke="url(#braidedSiltGrad)"
-            strokeWidth="12"
-            opacity="0.38"
-          />
+          {/* Anastomosing silt-gold braided channels that split and rejoin */}
+          <g ref={primaryChannelsRef} data-testid="braided-river-channels" className="will-change-transform">
+            <path
+              d="M-80,78 C220,62 450,115 760,94 C1070,72 1350,128 1900,86"
+              fill="none"
+              stroke="url(#braidedSiltGrad)"
+              strokeWidth="3.5"
+            />
+            <path
+              d="M-60,112 C280,148 540,78 860,118 C1160,154 1460,92 1900,136"
+              fill="none"
+              stroke="url(#braidedSiltGrad)"
+              strokeWidth="6"
+              opacity="0.7"
+            />
+            <path
+              d="M-70,168 C310,132 680,206 1040,164 C1360,126 1590,192 1900,174"
+              fill="none"
+              stroke="url(#braidedSiltGrad)"
+              strokeWidth="8.5"
+              opacity="0.55"
+            />
+            <path
+              d="M-50,226 C410,254 860,198 1310,236 C1550,254 1710,224 1900,242"
+              fill="none"
+              stroke="url(#braidedSiltGrad)"
+              strokeWidth="12"
+              opacity="0.38"
+            />
+          </g>
+
+          {/* Fast-moving luminous surface glint strands */}
+          <g ref={glintChannelsRef} data-testid="braided-river-glints" className="will-change-transform">
+            <path
+              d="M40,92 C320,126 580,132 850,96 C1120,62 1390,142 1820,108"
+              fill="none"
+              stroke="#FFE08F"
+              strokeWidth="2"
+              className="animate-river-glint"
+            />
+            <path
+              d="M140,152 C470,192 770,144 1130,178 C1410,204 1640,156 1860,188"
+              fill="none"
+              stroke="#FFE08F"
+              strokeWidth="2.4"
+              className="animate-river-glint"
+            />
+          </g>
         </svg>
       </div>
     </div>
